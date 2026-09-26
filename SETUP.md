@@ -37,11 +37,17 @@ If a page says "The database is missing a migration", a step above was skipped.
 
 ## 3. Make an admin
 
-The first admin has to be set in the SQL editor:
+Public sign-up always creates **students**, so nobody can make themselves
+admin. Create the admin account at setup time instead:
 
-```sql
-update users set role = 'admin' where email = 'you@example.com';
+```bash
+npm run create-admin -- --email admin@example.com --name "Site Admin" --password "a-strong-password"
 ```
+
+This creates a confirmed account with the admin role (no sign-up page, no
+confirmation email) — then sign in at `/sign-in`. Leave out `--password` to
+have a random one generated and printed once. Running it for an email that
+already has an account promotes that account instead.
 
 After that, admins manage everyone from **Admin → Users**: change a role
 (student / instructor / admin) or disable an account (the person can no
