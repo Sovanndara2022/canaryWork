@@ -227,3 +227,14 @@ export async function deleteResource(supabase: Supabase, lessonId: string, resou
   if (!count) notFound("Resource");
   return { id: resourceId };
 }
+
+// Headline numbers for the catalog hero.
+export async function catalogStats(supabase: Supabase) {
+  const head = { count: "exact" as const, head: true };
+  const [lessons, instructors, categories] = await Promise.all([
+    supabase.from("lessons").select("id", head).eq("status", "approved"),
+    supabase.from("public_profiles").select("id", head),
+    supabase.from("categories").select("id", head),
+  ]);
+  return { lessons: lessons.count ?? 0, instructors: instructors.count ?? 0, categories: categories.count ?? 0 };
+}

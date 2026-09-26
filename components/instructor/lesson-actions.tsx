@@ -12,10 +12,10 @@ export function SubmitLessonButton({ lessonId, disabledReason }: { lessonId: str
   const [pending, startTransition] = useTransition();
 
   return (
-    <div className="flex flex-col items-start gap-2">
+    <div className="flex flex-col gap-2">
       <Button
         disabled={pending || Boolean(disabledReason)}
-        className="h-9 px-4"
+        className="h-10 w-full"
         onClick={() => {
           setError(null);
           startTransition(async () => {

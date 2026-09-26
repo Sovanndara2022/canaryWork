@@ -8,7 +8,7 @@ type Row = LessonSummary & { submitted_at?: string | null };
 
 export function AdminLessonTable({ rows }: { rows: Row[] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border">
+    <div className="overflow-x-auto rounded-xl border bg-card shadow-xs">
       <table className="w-full min-w-[640px] text-sm">
         <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
           <tr>

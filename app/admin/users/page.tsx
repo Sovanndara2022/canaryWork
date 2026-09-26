@@ -1,4 +1,5 @@
 import { Search, Users } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 import { DisableUserButton } from "@/components/admin/disable-user-button";
 import { RoleSelect } from "@/components/admin/role-select";
 import { Pagination } from "@/components/layout/pagination";
@@ -30,8 +31,8 @@ export default async function AdminUsersPage(props: PageProps<"/admin/users">) {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <PageHeader eyebrow="Admin" title="Users" />
+      <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground">
         Change a role to make someone an instructor or admin. Disabling an account stops that person signing in; their data stays.
       </p>
 
@@ -54,7 +55,7 @@ export default async function AdminUsersPage(props: PageProps<"/admin/users">) {
       </form>
 
       {rows.length > 0 ? (
-        <div className="overflow-x-auto rounded-xl border">
+        <div className="overflow-x-auto rounded-xl border bg-card shadow-xs">
           <table className="w-full min-w-[680px] text-sm">
             <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
               <tr>

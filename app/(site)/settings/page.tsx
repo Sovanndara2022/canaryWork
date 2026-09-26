@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Presentation } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 import { becomeInstructorAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { ProfileForm } from "@/components/settings/profile-form";
@@ -14,14 +15,13 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-      <p className="mt-1 text-sm text-muted-foreground">How you appear to others on Lightning Lessons.</p>
+      <PageHeader title="Settings" description="How you appear to others on Lightning Lessons." />
 
-      <div className="mt-8 rounded-xl border p-5 sm:p-6">
+      <div className="mt-8 rounded-xl border bg-card shadow-xs p-5 sm:p-6">
         <ProfileForm initial={profile} />
       </div>
 
-      <div className="mt-6 rounded-xl border p-5 sm:p-6">
+      <div className="mt-6 rounded-xl border bg-card shadow-xs p-5 sm:p-6">
         <h2 className="text-sm font-semibold">Account</h2>
         <dl className="mt-3 grid grid-cols-[6rem_1fr] gap-y-2 text-sm">
           <dt className="text-muted-foreground">Email</dt>

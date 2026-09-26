@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Inbox } from "lucide-react";
+import { ArrowRight, BookOpen, GraduationCap, Inbox, Timer, Users } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 import { AdminLessonTable } from "@/components/admin/lesson-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Stat } from "@/components/ui/stat";
@@ -18,15 +19,15 @@ export default async function AdminOverviewPage() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Review submissions and keep an eye on the platform.</p>
+      <PageHeader eyebrow="Admin" title="Overview" description="Review submissions and keep an eye on the platform." />
 
       <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <Stat label="Waiting for review" value={stats.pending_approvals} />
-        <Stat label="Lessons" value={stats.total_lessons} />
-        <Stat label="Users" value={stats.total_users} />
-        <Stat label="Instructors" value={stats.total_instructors} />
+        <Stat label="Waiting for review" value={stats.pending_approvals} icon={Inbox} />
+        <Stat label="Lessons" value={stats.total_lessons} icon={BookOpen} />
+        <Stat label="Users" value={stats.total_users} icon={Users} />
+        <Stat label="Instructors" value={stats.total_instructors} icon={GraduationCap} />
         <Stat
+          icon={Timer}
           label="Avg. review time"
           value={stats.avg_approval_turnaround_hours === null ? "—" : `${stats.avg_approval_turnaround_hours}h`}
           hint="submitted → decided"

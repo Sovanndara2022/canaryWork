@@ -9,7 +9,7 @@ function isSafeUrl(value: string) {
 
 export function ResourceList({ resources, actions }: { resources: LessonResource[]; actions?: (resource: LessonResource) => React.ReactNode }) {
   return (
-    <ul className="divide-y rounded-xl border">
+    <ul className="divide-y rounded-xl border bg-card shadow-xs">
       {resources.map((resource) => {
         const Icon = icons[resource.type];
         return (

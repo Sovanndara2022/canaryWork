@@ -54,7 +54,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         <div className="mx-auto w-full max-w-[440px]">
           <p className="text-sm font-medium text-muted-foreground">{preview.label}</p>
 
-          <ul className="mt-4 divide-y rounded-xl border bg-background shadow-sm">
+          <ul className="mt-4 divide-y rounded-xl border bg-card shadow-sm">
             {preview.items.map((lesson) => (
               <li key={lesson.id} className="flex items-center gap-4 p-4">
                 <LessonThumbnail

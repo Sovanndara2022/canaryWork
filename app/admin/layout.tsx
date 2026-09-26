@@ -17,7 +17,6 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
       <SiteHeader profile={profile} />
       <div className="border-b">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 sm:px-6">
-          <span className="hidden text-sm font-semibold sm:inline">Admin</span>
           <AdminNav />
         </div>
       </div>

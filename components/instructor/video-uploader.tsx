@@ -123,16 +123,16 @@ export function VideoUploader({ lessonId, playbackId, durationSeconds, hasPendin
         </div>
       ) : (
         !busy && (
-          <div className="flex aspect-video flex-col items-center justify-center rounded-xl border border-dashed text-center">
+          <div className="flex aspect-video flex-col items-center justify-center rounded-xl border bg-card shadow-xs border-dashed text-center">
             <Upload className="size-6 text-muted-foreground" />
             <p className="mt-2 text-sm font-medium">No video yet</p>
-            <p className="mt-1 max-w-xs text-xs text-muted-foreground">Short is good — most lessons are 5 to 15 minutes.</p>
+            <p className="mt-1 max-w-xs text-xs text-muted-foreground">MP4 or MOV, up to 2 GB.</p>
           </div>
         )
       )}
 
       {busy && (
-        <div className="rounded-xl border p-4">
+        <div className="rounded-xl border bg-card shadow-xs p-4">
           <div className="flex items-center gap-2 text-sm font-medium">
             <Loader2 className="size-4 animate-spin" />
             {phase === "requesting" && "Preparing upload…"}
@@ -141,7 +141,7 @@ export function VideoUploader({ lessonId, playbackId, durationSeconds, hasPendin
           </div>
           {phase === "uploading" && (
             <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-foreground transition-[width]" style={{ width: `${percent}%` }} />
+              <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${percent}%` }} />
             </div>
           )}
           {phase === "processing" && <p className="mt-1 text-xs text-muted-foreground">You can leave this page; the video attaches on its own.</p>}

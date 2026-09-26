@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Bookmark, History } from "lucide-react";
+import { Bookmark, CheckCircle2, History, PlayCircle } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 import { LessonCard, LessonGrid } from "@/components/lessons/lesson-card";
 import { Pagination } from "@/components/layout/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -23,13 +24,12 @@ export default async function LibraryPage(props: PageProps<"/library">) {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">My learning</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Pick up where you left off and find the lessons you saved.</p>
+      <PageHeader title="My learning" description="Pick up where you left off and find the lessons you saved." />
 
-      <div className="mt-8 grid grid-cols-3 gap-3 sm:max-w-xl">
-        <Stat label="Completed" value={dashboard.completed_count} />
-        <Stat label="In progress" value={dashboard.in_progress_count} />
-        <Stat label="Saved" value={dashboard.bookmarks_count} />
+      <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <Stat label="Completed" value={dashboard.completed_count} icon={CheckCircle2} />
+        <Stat label="In progress" value={dashboard.in_progress_count} icon={PlayCircle} />
+        <Stat label="Saved" value={dashboard.bookmarks_count} icon={Bookmark} />
       </div>
 
       <section className="mt-12">
@@ -44,13 +44,15 @@ export default async function LibraryPage(props: PageProps<"/library">) {
                 <LessonCard
                   key={lesson.id}
                   lesson={lesson}
+                  progress={completed ? 100 : percent}
                   footer={
-                    <div className="mt-2 flex items-center gap-2">
-                      <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted" aria-hidden="true">
-                        <div className="h-full rounded-full bg-foreground" style={{ width: `${completed ? 100 : percent}%` }} />
-                      </div>
-                      <span className="text-[11px] text-muted-foreground tabular-nums">{completed ? "Done" : `${percent}%`}</span>
-                    </div>
+                    completed ? (
+                      <p className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                        <CheckCircle2 className="size-3.5" /> Completed
+                      </p>
+                    ) : (
+                      <p className="mt-1.5 text-xs font-medium text-primary">{percent}% watched · Resume</p>
+                    )
                   }
                 />
               );
@@ -60,7 +62,7 @@ export default async function LibraryPage(props: PageProps<"/library">) {
           <EmptyState
             icon={History}
             title="Nothing watched yet"
-            action={<Link href="/" className="text-sm font-medium underline underline-offset-4">Browse lessons</Link>}
+            action={<Link href="/" className="text-sm font-medium text-primary underline-offset-4 hover:underline">Browse lessons</Link>}
           >
             Lessons you start watching show up here with your progress.
           </EmptyState>

@@ -58,7 +58,7 @@ export default async function AdminReviewPage(props: PageProps<"/admin/lessons/[
       </div>
 
       <aside className="space-y-6 lg:pt-9">
-        <div className="rounded-xl border p-5">
+        <div className="rounded-xl border bg-card shadow-xs p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Review</h2>
             <StatusBadge status={lesson.status} />
@@ -92,7 +92,7 @@ export default async function AdminReviewPage(props: PageProps<"/admin/lessons/[
           </div>
         </div>
 
-        <div className="rounded-xl border p-5">
+        <div className="rounded-xl border bg-card shadow-xs p-5">
           <h2 className="text-sm font-semibold">Danger zone</h2>
           <p className="mt-1 mb-3 text-xs text-muted-foreground">Removes the lesson, its resources, bookmarks and progress.</p>
           <DeleteLessonButton lessonId={lesson.id} redirectTo="/admin/lessons?status=all" />

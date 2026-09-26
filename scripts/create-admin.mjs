@@ -40,7 +40,7 @@ if (!email || !email.includes("@")) {
   process.exit(1);
 }
 if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set (see SETUP.md).");
+  console.error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set (see README.md).");
   process.exit(1);
 }
 if (chosenPassword && chosenPassword.length < 8) {

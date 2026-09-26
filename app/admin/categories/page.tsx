@@ -1,4 +1,5 @@
 import { Tags } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 import { CategoryForm } from "@/components/admin/category-form";
 import { EmptyState } from "@/components/ui/empty-state";
 import { requirePageRole } from "@/lib/auth/requireRole";
@@ -12,8 +13,7 @@ export default async function AdminCategoriesPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-semibold tracking-tight">Categories</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Instructors pick one of these for every lesson; students filter the catalog by them.</p>
+      <PageHeader eyebrow="Admin" title="Categories" description="Instructors pick one of these for every lesson; students filter the catalog by them." />
 
       <div className="mt-6">
         <CategoryForm />
@@ -21,7 +21,7 @@ export default async function AdminCategoriesPage() {
 
       <div className="mt-6">
         {categories.length > 0 ? (
-          <ul className="divide-y rounded-xl border">
+          <ul className="divide-y rounded-xl border bg-card shadow-xs">
             {categories.map((category) => (
               <li key={category.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <span className="font-medium">{category.name}</span>

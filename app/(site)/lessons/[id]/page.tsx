@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { EyeOff, Film } from "lucide-react";
+import { ChevronRight, EyeOff, Film } from "lucide-react";
 import { Alert } from "@/components/ui/alert";
 import { Avatar } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { BookmarkButton } from "@/components/lessons/bookmark-button";
 import { LessonCard } from "@/components/lessons/lesson-card";
 import { LessonPlayer } from "@/components/lessons/lesson-player";
 import { ResourceList } from "@/components/lessons/resource-list";
+import { ShareButton } from "@/components/lessons/share-button";
 import { StatusBadge } from "@/components/lessons/status-badge";
 import { getSession, getSupabase } from "@/lib/auth/getSession";
 import { getBookmarkFor, getProgress } from "@/lib/data/learning";
@@ -44,6 +45,20 @@ export default async function LessonPage(props: PageProps<"/lessons/[id]">) {
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0">
+        <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1 text-sm text-muted-foreground">
+          <Link href="/" className="hover:text-foreground">
+            Browse
+          </Link>
+          {lesson.category && (
+            <>
+              <ChevronRight className="size-3.5" />
+              <Link href={`/?category=${lesson.category.slug}`} className="hover:text-foreground">
+                {lesson.category.name}
+              </Link>
+            </>
+          )}
+        </nav>
+
         {!isPublished && (
           <Alert tone="warning" icon={EyeOff} title="Preview — not published" className="mb-5">
             <span className="flex flex-wrap items-center gap-2">
@@ -62,7 +77,7 @@ export default async function LessonPage(props: PageProps<"/lessons/[id]">) {
             initialProgress={progress}
           />
         ) : (
-          <div className="flex aspect-video flex-col items-center justify-center rounded-xl bg-muted text-center">
+          <div className="flex aspect-video flex-col items-center justify-center rounded-xl border bg-card text-center">
             <Film className="size-8 text-muted-foreground" />
             <p className="mt-2 text-sm text-muted-foreground">No video has been uploaded for this lesson yet.</p>
           </div>
@@ -89,24 +104,33 @@ export default async function LessonPage(props: PageProps<"/lessons/[id]">) {
               </Link>
             )}
             {isPublished && <BookmarkButton lessonId={lesson.id} initialBookmarkId={bookmarkId} signedIn={Boolean(session)} />}
+            {isPublished && <ShareButton />}
           </div>
         </div>
 
-        {lesson.description && (
-          <div className="mt-6 rounded-xl bg-muted/50 p-4">
-            <p className="text-xs text-muted-foreground">Published {formatDate(lesson.reviewed_at ?? lesson.created_at)}</p>
-            <p className="mt-2 text-sm leading-6 whitespace-pre-line">{lesson.description}</p>
-          </div>
-        )}
+        <section className="mt-6 rounded-xl border bg-card p-5 shadow-xs">
+          <h2 className="text-sm font-semibold">About this lesson</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {isPublished ? `Published ${formatDate(lesson.reviewed_at ?? lesson.created_at)}` : `Created ${formatDate(lesson.created_at)}`}
+          </p>
+          <p className="mt-3 text-sm leading-6 whitespace-pre-line">
+            {lesson.description || <span className="text-muted-foreground">The instructor hasn&apos;t added a description.</span>}
+          </p>
+        </section>
       </div>
 
       <aside className="space-y-8">
         <section>
-          <h2 className="mb-3 text-sm font-semibold">Resources</h2>
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+            Resources
+            {lesson.resources.length > 0 && (
+              <span className="rounded-full bg-muted px-1.5 text-xs font-medium text-muted-foreground">{lesson.resources.length}</span>
+            )}
+          </h2>
           {lesson.resources.length > 0 ? (
             <ResourceList resources={lesson.resources} />
           ) : (
-            <p className="text-sm text-muted-foreground">No extra resources for this lesson.</p>
+            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">No extra resources for this lesson.</p>
           )}
         </section>
 

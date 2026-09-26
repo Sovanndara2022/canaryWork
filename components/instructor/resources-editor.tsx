@@ -78,7 +78,7 @@ export function ResourcesEditor({ lessonId, resources, editable }: { lessonId: s
       )}
 
       {editable && (
-        <form onSubmit={add} className="rounded-xl border p-4">
+        <form onSubmit={add} className="rounded-xl border bg-card shadow-xs p-4">
           <FieldGroup className="gap-4">
             <div className="grid gap-4 sm:grid-cols-[9rem_1fr]">
               <Field>

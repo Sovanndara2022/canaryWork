@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn } from "cn";
 import { Inbox } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 import { AdminLessonTable } from "@/components/admin/lesson-table";
 import { Pagination } from "@/components/layout/pagination";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -28,8 +29,7 @@ export default async function AdminLessonsPage(props: PageProps<"/admin/lessons"
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Lessons</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Open a lesson to watch it and approve or send it back.</p>
+      <PageHeader eyebrow="Admin" title="Lessons" description="Open a lesson to watch it and approve or send it back." />
 
       <div className="mt-6 mb-6 flex gap-1 overflow-x-auto border-b">
         {tabs.map((tab) => (
@@ -39,7 +39,7 @@ export default async function AdminLessonsPage(props: PageProps<"/admin/lessons"
             aria-current={status === tab.value ? "page" : undefined}
             className={cn(
               "-mb-px border-b-2 border-transparent px-3 py-2 text-sm whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground",
-              status === tab.value && "border-foreground text-foreground"
+              status === tab.value && "border-primary font-medium text-foreground"
             )}
           >
             {tab.label}
