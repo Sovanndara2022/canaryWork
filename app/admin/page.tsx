@@ -1,59 +1,55 @@
+import Link from "next/link";
+import { ArrowRight, Inbox } from "lucide-react";
+import { AdminLessonTable } from "@/components/admin/lesson-table";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Stat } from "@/components/ui/stat";
 import { requirePageRole } from "@/lib/auth/requireRole";
+import { adminDashboard } from "@/lib/data/dashboards";
+import { listLessonsForReview } from "@/lib/data/admin";
 
-const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "medium", timeZone: "UTC" });
+export const metadata = { title: "Admin · Lightning Lessons" };
 
-type PendingLesson = {
-  id: string;
-  title: string;
-  submitted_at: string | null;
-  // lessons has two FKs to users (instructor_id, reviewed_by), so the embed
-  // has to name which one.
-  instructor: { full_name: string | null; email: string } | null;
-};
-
-export default async function AdminPendingPage() {
+export default async function AdminOverviewPage() {
   const { supabase } = await requirePageRole("admin");
-
-  const { data: pending } = await supabase
-    .from("lessons")
-    .select("id, title, submitted_at, instructor:users!lessons_instructor_id_fkey(full_name, email)")
-    .eq("status", "pending")
-    .order("submitted_at", { ascending: true })
-    .returns<PendingLesson[]>();
+  const [stats, queue] = await Promise.all([
+    adminDashboard(supabase),
+    listLessonsForReview(supabase, "pending", { from: 0, to: 4 }),
+  ]);
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Pending approvals</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Lessons waiting for review, oldest first.
-      </p>
+      <h1 className="text-2xl font-semibold tracking-tight">Overview</h1>
+      <p className="mt-1 text-sm text-muted-foreground">Review submissions and keep an eye on the platform.</p>
 
-      {pending && pending.length > 0 ? (
-        <ul className="mt-8 divide-y rounded-xl border">
-          {pending.map((lesson) => (
-            <li key={lesson.id} className="flex items-center justify-between gap-4 px-4 py-3">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{lesson.title}</p>
-                <p className="text-xs text-muted-foreground">
-                  {lesson.instructor?.full_name ?? lesson.instructor?.email ?? "Unknown instructor"}
-                </p>
-              </div>
-              {lesson.submitted_at && (
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  Submitted {dateFormat.format(new Date(lesson.submitted_at))}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <div className="mt-8 rounded-xl border border-dashed px-6 py-16 text-center">
-          <p className="text-sm font-medium">Nothing to review</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Lessons instructors submit will appear here.
-          </p>
+      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-5">
+        <Stat label="Waiting for review" value={stats.pending_approvals} />
+        <Stat label="Lessons" value={stats.total_lessons} />
+        <Stat label="Users" value={stats.total_users} />
+        <Stat label="Instructors" value={stats.total_instructors} />
+        <Stat
+          label="Avg. review time"
+          value={stats.avg_approval_turnaround_hours === null ? "—" : `${stats.avg_approval_turnaround_hours}h`}
+          hint="submitted → decided"
+        />
+      </div>
+
+      <section className="mt-12">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">Review queue</h2>
+          {queue.total > 0 && (
+            <Link href="/admin/lessons?status=pending" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+              View all {queue.total} <ArrowRight className="size-4" />
+            </Link>
+          )}
         </div>
-      )}
+        {queue.rows.length > 0 ? (
+          <AdminLessonTable rows={queue.rows} />
+        ) : (
+          <EmptyState icon={Inbox} title="All caught up">
+            New submissions from instructors will appear here, oldest first.
+          </EmptyState>
+        )}
+      </section>
     </>
   );
 }

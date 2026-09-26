@@ -1,46 +1,67 @@
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { NavLinks, type NavItem } from "@/components/layout/nav-links";
 import { signOutAction } from "@/actions/auth";
-import { homePathFor, type Session } from "@/lib/auth/getSession";
+import type { Session } from "@/lib/auth/getSession";
 
 const roleLabel = { student: "Student", instructor: "Instructor", admin: "Admin" } as const;
 
-export function SiteHeader({ profile }: { profile: Session["profile"] }) {
-  const links = [
-    ...(profile.role !== "student" ? [{ href: "/instructor", label: "My lessons" }] : []),
-    ...(profile.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
-  ];
+export function SiteHeader({ profile }: { profile: Session["profile"] | null }) {
+  const items: NavItem[] = [{ href: "/", label: "Browse" }];
+  if (profile) items.push({ href: "/library", label: "My learning" });
+  if (profile && profile.role !== "student") items.push({ href: "/instructor", label: "Teach" });
+  if (profile?.role === "admin") items.push({ href: "/admin", label: "Admin" });
 
   return (
-    <header className="border-b">
-      <div className="mx-auto flex h-14 max-w-5xl items-center gap-6 px-6">
-        <Link href={homePathFor(profile.role)}>
+    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
+        <Link href="/" className="shrink-0">
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-5 text-sm text-muted-foreground sm:flex">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <NavLinks items={items} className="hidden md:flex" />
 
-        <div className="ml-auto flex items-center gap-3">
-          <span className="hidden text-sm sm:inline">{profile.full_name ?? profile.email}</span>
-          <span className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground">
-            {roleLabel[profile.role]}
-          </span>
-          <form action={signOutAction}>
-            <Button type="submit" variant="ghost" size="sm" aria-label="Sign out">
-              <LogOut />
-              <span className="hidden sm:inline">Sign out</span>
-            </Button>
-          </form>
+        <div className="ml-auto flex items-center gap-2">
+          {profile ? (
+            <>
+              <Link
+                href="/settings"
+                className="flex items-center gap-2 rounded-full py-1 pr-1 pl-1 text-sm transition-colors hover:bg-muted sm:pr-3"
+                title="Profile settings"
+              >
+                <Avatar name={profile.full_name ?? profile.email} src={profile.avatar_url} className="size-7" />
+                <span className="hidden max-w-[10rem] truncate sm:inline">{profile.full_name ?? profile.email}</span>
+                <span className="hidden rounded-full border px-1.5 py-px text-[11px] text-muted-foreground lg:inline">
+                  {roleLabel[profile.role]}
+                </span>
+              </Link>
+              <form action={signOutAction}>
+                <Button type="submit" variant="ghost" size="icon" aria-label="Sign out" title="Sign out">
+                  <LogOut />
+                </Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link href="/sign-in" className={buttonVariants({ variant: "ghost" })}>
+                Sign in
+              </Link>
+              <Link href="/sign-up" className={buttonVariants()}>
+                Get started
+              </Link>
+            </>
+          )}
         </div>
       </div>
+
+      {items.length > 1 && (
+        <div className="border-t px-2 md:hidden">
+          <NavLinks items={items} className="overflow-x-auto py-1.5" />
+        </div>
+      )}
     </header>
   );
 }

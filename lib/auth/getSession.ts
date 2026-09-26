@@ -7,8 +7,11 @@ import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, UserRole } from "@/types/user";
 
+// One cookie-bound Supabase client per request (anonymous if signed out).
+export const getSupabase = cache(createClient);
+
 export const getSession = cache(async () => {
-  const supabase = await createClient();
+  const supabase = await getSupabase();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -25,11 +28,11 @@ export const getSession = cache(async () => {
 });
 
 export type Session = NonNullable<Awaited<ReturnType<typeof getSession>>>;
+export type Supabase = Awaited<ReturnType<typeof createClient>>;
 
-// Where each role lands after signing in. Students go to /on-board until
-// the public catalog exists (Week 7).
+// Where each role lands after signing in.
 export function homePathFor(role: UserRole) {
   if (role === "admin") return "/admin";
   if (role === "instructor") return "/instructor";
-  return "/on-board";
+  return "/";
 }

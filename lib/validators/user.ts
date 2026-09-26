@@ -8,7 +8,7 @@ import { z } from "zod";
 export const updateProfileSchema = z
   .strictObject({
     full_name: z.string().trim().min(1, "Name can't be empty.").max(100),
-    avatar_url: z.url("Avatar must be a URL.").nullable(),
+    avatar_url: z.url({ protocol: /^https?$/, message: "Avatar must be an https:// URL." }).nullable(),
     bio: z.string().trim().max(500, "Bio must be 500 characters or fewer.").nullable(),
   })
   .partial()

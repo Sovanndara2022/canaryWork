@@ -1,16 +1,15 @@
 // POST /api/users/become-instructor — self-serve role upgrade
 // (design doc, Sections 6.1 and 9.1). Students only.
 
-import { ok, fail } from "@/lib/api/response";
+import { handle, ok } from "@/lib/api/response";
 import { requireRole } from "@/lib/auth/requireRole";
+import { dbError } from "@/lib/data/errors";
 
-export async function POST() {
-  const auth = await requireRole("student");
-  if (!auth.ok) return auth.response;
+export const POST = handle(async () => {
+  const { supabase, profile } = await requireRole("student");
 
-  const { supabase, profile } = auth.session;
   const { error } = await supabase.rpc("become_instructor");
-  if (error) return fail("SERVER_ERROR", "Couldn't update your account.");
+  if (error) dbError(error);
 
   return ok({ id: profile.id, role: "instructor" as const });
-}
+});
