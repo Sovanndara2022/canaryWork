@@ -1,6 +1,6 @@
 -- 0005_app_functions.sql
 -- Lightning Lessons — database pieces the app needs on top of 0001–0004.
--- Run after 0004_security_fixes.sql.
+-- Run after 0004_security_fixes.sql. Safe to run more than once.
 
 -- ── 1. Link a Mux direct upload to its lesson ──────────────────────
 -- Set by POST /api/upload/mux; lets the app look up the asset when the
@@ -114,6 +114,7 @@ grant select on public.public_profiles to anon, authenticated;
 
 -- ── 6. Deleting lessons (DELETE /api/lessons/:id) ──────────────────
 -- RLS had no delete policy, so deletes silently affected zero rows.
+drop policy if exists "owner deletes unpublished, admin deletes any" on public.lessons;
 create policy "owner deletes unpublished, admin deletes any" on public.lessons
   for delete using (
     (instructor_id = auth.uid() and status in ('draft', 'rejected'))
@@ -124,18 +125,21 @@ create policy "owner deletes unpublished, admin deletes any" on public.lessons
 -- Previously an instructor could add links to an already-approved lesson.
 drop policy if exists "instructor manages own resources" on public.lesson_resources;
 
+drop policy if exists "instructor adds resources to editable lessons" on public.lesson_resources;
 create policy "instructor adds resources to editable lessons" on public.lesson_resources
   for insert with check (
     exists (select 1 from public.lessons l
             where l.id = lesson_id and l.instructor_id = auth.uid()
               and l.status in ('draft', 'rejected'))
   );
+drop policy if exists "instructor edits resources on editable lessons" on public.lesson_resources;
 create policy "instructor edits resources on editable lessons" on public.lesson_resources
   for update using (
     exists (select 1 from public.lessons l
             where l.id = lesson_id and l.instructor_id = auth.uid()
               and l.status in ('draft', 'rejected'))
   );
+drop policy if exists "instructor removes resources from editable lessons" on public.lesson_resources;
 create policy "instructor removes resources from editable lessons" on public.lesson_resources
   for delete using (
     exists (select 1 from public.lessons l
