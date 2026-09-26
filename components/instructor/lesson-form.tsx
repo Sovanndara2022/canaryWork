@@ -95,7 +95,7 @@ export function LessonForm({ categories, lesson, disabled }: Props) {
             <div className="flex items-center gap-3">
               <Button type="submit" className="h-9 px-4">
                 {pending && <Loader2 className="animate-spin" />}
-                {lesson ? "Save details" : "Create draft"}
+                {lesson ? "Save details" : "Create draft & continue"}
               </Button>
               {saved && <span className="text-sm text-muted-foreground">Saved.</span>}
             </div>

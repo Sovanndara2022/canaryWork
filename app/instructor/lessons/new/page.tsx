@@ -16,10 +16,25 @@ export default async function NewLessonPage() {
         <ArrowLeft className="size-4" /> Back to Teach
       </Link>
       <h1 className="mt-4 text-2xl font-semibold tracking-tight">New lesson</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        This creates a draft only you can see. You&apos;ll add the video and resources on the next page.
-      </p>
-      <div className="mt-8 rounded-xl border p-5 sm:p-6">
+      <p className="mt-1 text-sm text-muted-foreground">This creates a draft only you can see.</p>
+
+      <ol className="mt-6 grid gap-2 text-sm sm:grid-cols-3">
+        {["Title & category", "Upload video & resources", "Submit for review"].map((step, index) => (
+          <li
+            key={step}
+            className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${index === 0 ? "border-foreground" : "text-muted-foreground"}`}
+          >
+            <span
+              className={`flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-medium ${index === 0 ? "bg-foreground text-background" : "bg-muted"}`}
+            >
+              {index + 1}
+            </span>
+            {step}
+          </li>
+        ))}
+      </ol>
+
+      <div className="mt-6 rounded-xl border p-5 sm:p-6">
         <LessonForm categories={categories} />
       </div>
     </div>
