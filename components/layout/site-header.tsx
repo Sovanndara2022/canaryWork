@@ -4,6 +4,7 @@ import { Logo } from "@/components/brand/logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { NavLinks, type NavItem } from "@/components/layout/nav-links";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { signOutAction } from "@/actions/auth";
 import type { Session } from "@/lib/auth/getSession";
 
@@ -24,7 +25,8 @@ export function SiteHeader({ profile }: { profile: Session["profile"] | null }) 
 
         <NavLinks items={items} className="hidden md:flex" />
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          <ThemeToggle />
           {profile ? (
             <>
               <Link

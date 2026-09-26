@@ -10,7 +10,7 @@ export function LogoMark({ className }: { className?: string }) {
         className
       )}
     >
-      <Zap className="size-4" fill="currentColor" strokeWidth={0} />
+      <Zap className="size-4 text-amber-300" fill="currentColor" strokeWidth={0} />
     </span>
   );
 }
