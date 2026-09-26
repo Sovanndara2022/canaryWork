@@ -1,4 +1,5 @@
 import { Search, Users } from "lucide-react";
+import { DisableUserButton } from "@/components/admin/disable-user-button";
 import { RoleSelect } from "@/components/admin/role-select";
 import { Pagination } from "@/components/layout/pagination";
 import { Avatar } from "@/components/ui/avatar";
@@ -8,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import { parsePage } from "@/lib/api/response";
 import { requirePageRole } from "@/lib/auth/requireRole";
-import { listUsers } from "@/lib/data/admin";
+import { disabledUserIds, listUsers } from "@/lib/data/admin";
+import { adminConfigured } from "@/lib/supabase/admin";
 import { formatDate } from "@/lib/format";
 import type { UserRole } from "@/types/user";
 
@@ -23,11 +25,15 @@ export default async function AdminUsersPage(props: PageProps<"/admin/users">) {
   const role = roles.find((r) => r === searchParams.role);
   const range = parsePage(searchParams, 20);
   const { rows, total } = await listUsers(supabase, { q, role }, range);
+  const canDisable = adminConfigured();
+  const disabled = canDisable ? await disabledUserIds(rows.map((user) => user.id)) : new Set<string>();
 
   return (
     <>
       <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Change a role to promote an instructor or remove someone&apos;s teaching access.</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Change a role to make someone an instructor or admin. Disabling an account stops that person signing in; their data stays.
+      </p>
 
       <form action="/admin/users" className="mt-6 mb-6 flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
@@ -49,12 +55,13 @@ export default async function AdminUsersPage(props: PageProps<"/admin/users">) {
 
       {rows.length > 0 ? (
         <div className="overflow-x-auto rounded-xl border">
-          <table className="w-full min-w-[560px] text-sm">
+          <table className="w-full min-w-[680px] text-sm">
             <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
               <tr>
                 <th className="px-4 py-2.5 font-medium">User</th>
                 <th className="px-4 py-2.5 font-medium">Joined</th>
                 <th className="px-4 py-2.5 font-medium">Role</th>
+                {canDisable && <th className="px-4 py-2.5 text-right font-medium">Account</th>}
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -67,7 +74,14 @@ export default async function AdminUsersPage(props: PageProps<"/admin/users">) {
                         <p className="truncate font-medium">
                           {user.full_name ?? "—"} {user.id === profile.id && <span className="text-xs font-normal text-muted-foreground">(you)</span>}
                         </p>
-                        <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {user.email}
+                          {disabled.has(user.id) && (
+                            <span className="ml-2 rounded-full bg-red-100 px-1.5 py-px text-[11px] font-medium text-red-900 dark:bg-red-950 dark:text-red-200">
+                              Disabled
+                            </span>
+                          )}
+                        </p>
                       </div>
                     </div>
                   </td>
@@ -75,6 +89,11 @@ export default async function AdminUsersPage(props: PageProps<"/admin/users">) {
                   <td className="px-4 py-3">
                     <RoleSelect userId={user.id} role={user.role} disabled={user.id === profile.id} />
                   </td>
+                  {canDisable && (
+                    <td className="px-4 py-3 text-right">
+                      {user.id !== profile.id && <DisableUserButton userId={user.id} disabled={disabled.has(user.id)} />}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

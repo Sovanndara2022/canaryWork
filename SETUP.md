@@ -37,17 +37,34 @@ If a page says "The database is missing a migration", a step above was skipped.
 
 ## 3. Make an admin
 
-Sign up in the app, then in the SQL editor:
+The first admin has to be set in the SQL editor:
 
 ```sql
 update users set role = 'admin' where email = 'you@example.com';
 ```
+
+After that, admins manage everyone from **Admin → Users**: change a role
+(student / instructor / admin) or disable an account (the person can no
+longer sign in; their data is kept).
 
 ## 4. Walk through the whole flow
 
 1. **Instructor** — sign up a second account → *Start teaching* → **Teach → New lesson** → pick a category → upload a video → add a resource → **Submit for review**.
 2. **Admin** — **Admin → Lessons** → open the lesson → watch it → **Approve & publish** (or **Request changes** with a reason; the instructor sees it and can resubmit).
 3. **Student** — the lesson now appears on **Browse**. Filter by category, sort by Trending/Newest, open it, press play (counts a view), **Save** it, watch past 90% (marks it completed). **My learning** shows progress and saved lessons.
+
+## Tests
+
+| Command | What it checks |
+|---|---|
+| `npm test` | Unit tests (Vitest): role guard, zod validators, Mux signature check, helpers |
+| `npm run test:e2e` | The whole flow against your Supabase project and the running dev server: 69 checks across all three roles, including direct-to-database attacks that RLS must block. Creates three temporary `ll-e2e-…@example.com` users and deletes them afterwards. Needs `SUPABASE_SERVICE_ROLE_KEY`. |
+| `npm run lint`, `npm run typecheck` | ESLint and TypeScript |
+
+GitHub Actions (`.github/workflows/ci.yml`) runs lint, typecheck, unit tests
+and a production build on every push and pull request. To make failures
+block merging, enable **Require status checks** for `main` in the repo's
+branch protection settings.
 
 ## Video on localhost
 
@@ -75,4 +92,4 @@ and set `MUX_WEBHOOK_SECRET`.
 - **Progress and bookmarks** are open to any signed-in user, not only students (instructors and admins watch lessons too).
 - **`DELETE /api/lessons/:id/resources/:resourceId`** added so instructors can remove a resource.
 - **`GET /api/lessons/:id/video`** added as the Mux webhook fallback.
-- **Account disabling** (`PATCH /api/admin/users/:id`) is not implemented — it needs Supabase's Auth admin API; role changes are.
+- **Account disabling** uses Supabase Auth's ban, so it needs `SUPABASE_SERVICE_ROLE_KEY`; without it the Users page hides the Disable button.

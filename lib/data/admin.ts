@@ -4,6 +4,7 @@
 // enforces it again in the database.
 
 import { ApiError } from "@/lib/api/response";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Supabase } from "@/lib/auth/getSession";
 import { dbError, notFound } from "@/lib/data/errors";
 import { attachInstructors, getLesson, SUMMARY_COLUMNS } from "@/lib/data/lessons";
@@ -96,6 +97,33 @@ export async function setUserRole(supabase: Supabase, userId: string, role: User
   const { error } = await supabase.rpc("admin_set_user_role", { p_user_id: userId, p_role: role });
   if (error) dbError(error);
   return { id: userId, role };
+}
+
+// Disabling bans the account in Supabase Auth: the user can't sign in or
+// refresh their session, but their data stays. Needs the service-role key.
+const FOREVER = "876000h"; // ~100 years
+
+export async function setUserDisabled(userId: string, disabled: boolean, actingAdminId: string) {
+  if (userId === actingAdminId) throw new ApiError("FORBIDDEN", "You can't disable your own account.");
+  const { error } = await createAdminClient().auth.admin.updateUserById(userId, {
+    ban_duration: disabled ? FOREVER : "none",
+  });
+  if (error?.status === 404) throw new ApiError("NOT_FOUND", "User not found.");
+  if (error) throw new ApiError("SERVER_ERROR", "Couldn't update the account.");
+  return { id: userId, disabled };
+}
+
+// Which of these users are currently disabled (banned in Supabase Auth).
+export async function disabledUserIds(userIds: string[]): Promise<Set<string>> {
+  const admin = createAdminClient();
+  const results = await Promise.all(userIds.map((id) => admin.auth.admin.getUserById(id)));
+  const now = Date.now();
+  return new Set(
+    results
+      .map((result) => result.data.user)
+      .filter((user) => user?.banned_until && new Date(user.banned_until).getTime() > now)
+      .map((user) => user!.id)
+  );
 }
 
 // ── Categories ──────────────────────────────────────────────────────
