@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { becomeInstructorAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
+import { AreaBackdrop } from "@/components/layout/area-backdrop";
 import { SiteHeader } from "@/components/layout/site-header";
 import { requirePageRole } from "@/lib/auth/requireRole";
 import { PlayCircle, Presentation } from "lucide-react";
@@ -10,7 +11,8 @@ export default async function OnBoardPage() {
   const firstName = profile.full_name?.split(" ")[0];
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div data-area="student" className="relative isolate flex min-h-screen flex-col">
+      <AreaBackdrop />
       <SiteHeader profile={profile} />
 
       <main className="flex flex-1 items-center justify-center px-6 py-12">

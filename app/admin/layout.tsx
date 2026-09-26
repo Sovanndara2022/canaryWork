@@ -1,3 +1,4 @@
+import { AreaBackdrop } from "@/components/layout/area-backdrop";
 import { SiteHeader } from "@/components/layout/site-header";
 import { NavLinks } from "@/components/layout/nav-links";
 import { requirePageRole } from "@/lib/auth/requireRole";
@@ -13,9 +14,10 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const { profile } = await requirePageRole("admin");
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div data-area="admin" className="relative isolate flex min-h-screen flex-col">
+      <AreaBackdrop />
       <SiteHeader profile={profile} />
-      <div className="border-b">
+      <div className="border-b bg-background/60 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 sm:px-6">
           <AdminNav />
         </div>

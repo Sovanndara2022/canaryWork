@@ -124,6 +124,55 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ── Per-area accents ─────────────────────────────────────────────
+   Each portal wraps its pages in data-area="…", which re-tints the brand
+   tokens (buttons, tabs, focus rings, stat icons) and the page backdrop.
+   Student areas use the default indigo defined above. */
+:root {
+  --glow-1: oklch(0.62 0.2 277 / 0.22);
+  --glow-2: oklch(0.72 0.14 230 / 0.18);
+  --dots: oklch(0.2 0.01 270 / 0.07);
+}
+.dark {
+  --glow-1: oklch(0.55 0.2 277 / 0.28);
+  --glow-2: oklch(0.6 0.14 230 / 0.16);
+  --dots: oklch(1 0 0 / 0.06);
+}
+
+[data-area="instructor"] {
+  --primary: oklch(0.53 0.13 165);
+  --ring: oklch(0.53 0.13 165);
+  --brand-soft: oklch(0.95 0.04 165);
+  --brand-soft-foreground: oklch(0.42 0.11 165);
+  --glow-1: oklch(0.7 0.15 165 / 0.22);
+  --glow-2: oklch(0.75 0.12 195 / 0.18);
+}
+.dark [data-area="instructor"] {
+  --primary: oklch(0.6 0.13 165);
+  --ring: oklch(0.6 0.13 165);
+  --brand-soft: oklch(0.26 0.05 165);
+  --brand-soft-foreground: oklch(0.83 0.11 165);
+  --glow-1: oklch(0.55 0.13 165 / 0.26);
+  --glow-2: oklch(0.55 0.1 195 / 0.16);
+}
+
+[data-area="admin"] {
+  --primary: oklch(0.58 0.19 35);
+  --ring: oklch(0.58 0.19 35);
+  --brand-soft: oklch(0.955 0.035 50);
+  --brand-soft-foreground: oklch(0.48 0.16 35);
+  --glow-1: oklch(0.78 0.15 70 / 0.24);
+  --glow-2: oklch(0.7 0.17 15 / 0.16);
+}
+.dark [data-area="admin"] {
+  --primary: oklch(0.64 0.18 40);
+  --ring: oklch(0.64 0.18 40);
+  --brand-soft: oklch(0.27 0.05 45);
+  --brand-soft-foreground: oklch(0.85 0.1 55);
+  --glow-1: oklch(0.6 0.15 60 / 0.24);
+  --glow-2: oklch(0.55 0.17 15 / 0.16);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -134,4 +183,36 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ── Backdrop motion ────────────────────────────────────────────────
+   Slow drift for the page glows (components/layout/area-backdrop.tsx).
+   Long, offset loops so it reads as ambient, never distracting. */
+@keyframes backdrop-drift-a {
+  0%, 100% { transform: translate(-50%, 0) scale(1); }
+  50% { transform: translate(-46%, 40px) scale(1.08); }
+}
+@keyframes backdrop-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+  50% { transform: translate(-80px, 60px) scale(1.12); opacity: 0.7; }
+}
+@keyframes backdrop-drift-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(90px, -50px) scale(0.92); }
+}
+@keyframes backdrop-dots {
+  from { background-position: 0 0; }
+  to { background-position: 22px 22px; }
+}
+.animate-backdrop-a { animation: backdrop-drift-a 18s ease-in-out infinite; }
+.animate-backdrop-b { animation: backdrop-drift-b 22s ease-in-out infinite; }
+.animate-backdrop-c { animation: backdrop-drift-c 26s ease-in-out infinite; }
+.animate-backdrop-dots { animation: backdrop-dots 6s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-backdrop-a,
+  .animate-backdrop-b,
+  .animate-backdrop-c,
+  .animate-backdrop-dots { animation: none; }
+  .animate-backdrop-a { transform: translateX(-50%); }
 }
